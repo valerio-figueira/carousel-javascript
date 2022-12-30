@@ -69,6 +69,7 @@ function addAutorun(slider){
         clearInterval(slider.interval);
         if(slider.idle){
             addSliderInterval(slider);
+            slider.idle = false;
         }
     }
 }
