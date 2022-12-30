@@ -4,7 +4,9 @@ const slider = {
     prev: document.querySelector(".previous"),
     direction: "",
     autorun: true,
-    interval: undefined
+    interval: undefined,
+    idle: false,
+    timer: 4000
 }
 
 initSlider(slider);
@@ -19,7 +21,6 @@ function addSliderEvents(slider){
     slider.hero.addEventListener("mouseenter", () => {
         slider.autorun = false;
         addAutorun(slider);
-        console.log(slider.autorun)
     })
 
     slider.hero.addEventListener("mouseleave", () => {
@@ -33,6 +34,9 @@ function addSliderEvents(slider){
         }
         slider.direction = "next";
         addSliderConditionals(slider); 
+        slider.autorun = false;
+        slider.idle = true;
+        addAutorun(slider);
     });
     
     slider.prev.addEventListener("click", () => {
@@ -41,6 +45,9 @@ function addSliderEvents(slider){
         }
         slider.direction = "previous";
         addSliderConditionals(slider); 
+        slider.autorun = false;
+        slider.idle = true;
+        addAutorun(slider);
     });
     
     slider.hero.addEventListener("transitionend", () => {
@@ -57,13 +64,23 @@ function addSliderEvents(slider){
 
 function addAutorun(slider){
     if(slider.autorun){
-        slider.interval = setInterval(() => {
-            slider.direction = "next";
-            addSliderConditionals(slider);
-        }, 3000);
+        addSliderInterval(slider);
     } else{
         clearInterval(slider.interval);
+        if(slider.idle){
+            addSliderInterval(slider);
+        }
     }
+}
+
+function addSliderInterval(slider){
+    slider.interval = setInterval(() => {
+        if(slider.direction.match("previous")){
+            slider.hero.prepend(slider.hero.lastElementChild);
+        }
+        slider.direction = "next";
+        addSliderConditionals(slider);
+    }, slider.timer);
 }
 
 function addSliderConditionals(slider){
@@ -71,10 +88,10 @@ function addSliderConditionals(slider){
     if(slider.direction.match("next")){
         slider.hero.style.justifyContent = "flex-start";
         slider.hero.style.transform = "translateX(-100%)";
-        slider.hero.style.transition = "all .5s";  
+        slider.hero.style.transition = "all 1s";  
     } else{
         slider.hero.style.justifyContent = "flex-end";
         slider.hero.style.transform = "translateX(100%)";
-        slider.hero.style.transition = "all .5s";   
+        slider.hero.style.transition = "all 1s";   
     }
 }
